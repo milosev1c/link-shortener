@@ -1,5 +1,6 @@
 """HTTP route definitions."""
 
+import logging
 import re
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -11,6 +12,7 @@ from link_shortener.services.shortener import ShortenerService
 from link_shortener.storage.base import StorageError, URLStorage
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 _SHORT_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
 _HEALTHCHECK_PROBE_ID = "__healthcheck__"
@@ -22,6 +24,7 @@ async def health(storage: URLStorage = Depends(get_storage)) -> JSONResponse:
     try:
         await storage.get(_HEALTHCHECK_PROBE_ID)
     except StorageError:
+        logger.warning("Storage unavailable during health check")
         return JSONResponse(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             content={"status": "unavailable"},
@@ -38,6 +41,7 @@ async def shorten_url(
     try:
         result = await service.shorten(str(body.long_url))
     except StorageError:
+        logger.warning("Storage unavailable during shorten")
         return JSONResponse(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             content={"detail": "Storage unavailable"},
@@ -63,6 +67,7 @@ async def redirect_to_long_url(
     try:
         long_url = await storage.get(short_id)
     except StorageError:
+        logger.warning("Storage unavailable during redirect short_id=%s", short_id)
         raise HTTPException(status_code=503, detail="Storage unavailable") from None
 
     if long_url is None:
