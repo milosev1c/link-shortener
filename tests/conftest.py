@@ -2,11 +2,19 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from link_shortener.main import create_app
+from tests.storage.memory import MemoryURLStorage
 
 
 @pytest.fixture
-def app():
-    return create_app()
+async def memory_storage():
+    storage = MemoryURLStorage()
+    await storage.connect()
+    yield storage
+
+
+@pytest.fixture
+def app(memory_storage):
+    return create_app(storage=memory_storage)
 
 
 @pytest.fixture
