@@ -9,6 +9,12 @@ def test_dockerfile_exists():
     assert (ROOT / "Dockerfile").is_file()
 
 
+def test_dockerfile_uses_uv_lock():
+    dockerfile = (ROOT / "Dockerfile").read_text()
+    assert "uv.lock" in dockerfile
+    assert "uv sync --frozen" in dockerfile
+
+
 def _assert_app_healthcheck(compose: dict) -> None:
     healthcheck = compose["services"]["app"]["healthcheck"]
     probe = healthcheck["test"][-1]
