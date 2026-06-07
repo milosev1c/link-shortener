@@ -67,3 +67,13 @@ docker compose -f docker-compose.postgres.yml up --build
 | `HOST` | `0.0.0.0` | Server bind host |
 | `PORT` | `8000` | Server bind port |
 | `SHORT_ID_LENGTH` | `8` | Length of generated short ids |
+
+## AI usage
+
+This project was built with assistance from Cursor (AI coding agent). AI was used to:
+
+- Draft the initial architecture and implementation plan (layered API, pluggable storage, Docker deployment).
+- Implement the application code, tests, and deployment configs in incremental commits.
+- Refine design decisions during review (HTTP status codes, URL deduplication, documentation style).
+
+All generated code was reviewed and verified locally (`pytest`, Docker build, compose smoke tests) before committing.
