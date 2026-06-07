@@ -13,6 +13,7 @@ def test_dockerfile_uses_uv_lock():
     dockerfile = (ROOT / "Dockerfile").read_text()
     assert "uv.lock" in dockerfile
     assert "uv sync --frozen" in dockerfile
+    assert 'python", "-m", "uvicorn"' in dockerfile
 
 
 def _assert_app_healthcheck(compose: dict) -> None:
