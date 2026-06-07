@@ -13,6 +13,20 @@ from link_shortener.storage.base import StorageError, URLStorage
 router = APIRouter()
 
 _SHORT_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
+_HEALTHCHECK_PROBE_ID = "__healthcheck__"
+
+
+@router.get("/health")
+async def health(storage: URLStorage = Depends(get_storage)) -> JSONResponse:
+    """Liveness/readiness probe; verifies storage is reachable."""
+    try:
+        await storage.get(_HEALTHCHECK_PROBE_ID)
+    except StorageError:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "unavailable"},
+        )
+    return JSONResponse(content={"status": "ok"})
 
 
 @router.post("/links/shorten")

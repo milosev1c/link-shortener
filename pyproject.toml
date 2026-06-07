@@ -37,4 +37,5 @@ packages = ["src/link_shortener"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+pythonpath = ["."]
 filterwarnings = ["error"]

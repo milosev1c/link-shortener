@@ -7,6 +7,18 @@ services:
       STORAGE_BACKEND: postgres
       POSTGRES_DSN: postgresql://postgres:postgres@postgres:5432/link_shortener
       BASE_URL: http://localhost:8000
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     depends_on:
       postgres:
         condition: service_healthy
